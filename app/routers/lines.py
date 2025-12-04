@@ -7,7 +7,7 @@ router = APIRouter()
 @router.get("/lines", response_model=list[line_schema.Line])
 async def get_lines(operator_id: int):
     return [
-        line_schema.Line(
+        line_schema.Line = (
             id=1,
             name="山手線",
             operator_id=operator_id
