@@ -18,3 +18,5 @@ async def get_lines(operator_id: int):
 @router.get("/v1/lines/{line_id}")
 async def get_lines(line_id: int):
     pass
+
+#test
