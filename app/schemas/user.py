@@ -18,9 +18,9 @@ class UserCreateResponse(UserBase):
 class User(UserBase):
     id: int
 
-    username: str = Field(None, discription="名前")
-    email: EmailStr = Field(None, discription="メールアドレス")
-    password: str = Field(None, discription="パスワード")
+    username: str = Field(None, description="名前")
+    email: EmailStr = Field(None, description="メールアドレス")
+    password: str = Field(None, description="パスワード")
 
     class Config:
         orm_mode = True

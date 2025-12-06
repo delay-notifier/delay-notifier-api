@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
-from app.schemas import user_schema
+import app.schemas.user as user_schema 
 
 router = APIRouter()
 
-@router.get("/users/{user_id}", response_model=user_schema.User)
+@router.get("/{user_id}", response_model=user_schema.User)
 async def get_user(user_id: int):
     return user_schema.User(
         id=user_id,
@@ -12,7 +12,7 @@ async def get_user(user_id: int):
         password="password123"
     )
 
-@router.get("/users", response_model=list[user_schema.User])
+@router.get("", response_model=list[user_schema.User])
 async def list_users():
     return [
         user_schema.User(
@@ -28,15 +28,15 @@ async def list_users():
         )
     ]
 
-@router.post("/users", response_model=user_schema.UserCreateResponse)
+@router.post("", response_model=user_schema.UserCreateResponse)
 async def create_user(user_body: user_schema.UserCreate):
     return user_schema.UserCreateResponse(id=1, **user_body.dict())
 
-@router.put("/users/{user_id}", response_model=
+@router.put("/{user_id}", response_model=
             user_schema.UserCreateResponse)
 async def update_user(user_id: int, user_body: user_schema.UserCreate):
     return user_schema.UserCreateResponse(id=user_id, **user_body.dict())
 
-@router.delete("/users/{user_id}", response_model=None)
+@router.delete("/{user_id}", response_model=None)
 async def delete_user(user_id: int):
     return
