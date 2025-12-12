@@ -1,7 +1,12 @@
 from fastapi import APIRouter, Depends
 import app.schemas.user as user_schema 
+from app.routers.auth import get_current_user
 
 router = APIRouter()
+
+@router.get("/me", response_model=user_schema.User)
+async def get_me(current_user: user_schema.User =Depends(get_current_user)):
+    return current_user
 
 @router.get("/{user_id}", response_model=user_schema.User)
 async def get_user(user_id: int):
@@ -39,4 +44,4 @@ async def update_user(user_id: int, user_body: user_schema.UserCreate):
 
 @router.delete("/{user_id}", response_model=None)
 async def delete_user(user_id: int):
-    return
+    return {"message": f"User {user_id} deleted (dummy)" }
