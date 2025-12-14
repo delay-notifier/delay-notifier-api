@@ -1,18 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from app.schemas.user import UserCreate, UserCreateResponse, User
-from app.schemas.auth import LoginRequest, LoginResponse
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
+from app.schemas.user import UserCreate, UserResponse, User
+from app.schemas.auth import LoginResponse
+from app.dependencies.auth import get_current_user
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
 
-@router.post("/signup", response_model=UserCreateResponse)
+@router.post("/signup", response_model=UserResponse)
 async def signup(user_body: UserCreate):
-    return UserCreateResponse(
+    return UserResponse(
         id=1,
-        username=user_body.username,
-        email=user_body.email,
-        password=user_body.password
+        email=user_body.email
     )
 
 @router.post("/login", response_model=LoginResponse)
@@ -26,19 +24,6 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 async def logout():
     return {"message": "Logged out (dummy)"}
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    if token != "fake_token":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
-        )
-    return User(
-        id=1,
-        username="YamadaTaro",
-        email="test@example.com",
-        password="password123"
-    )
-
-@router.get("/me", response_model=User)
+@router.get("/me", response_model=UserResponse)
 async def me(current_user: User = Depends(get_current_user)):
     return current_user
