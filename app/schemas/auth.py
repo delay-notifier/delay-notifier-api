@@ -7,7 +7,7 @@ class LoginBase(BaseModel):
 class LoginRequest(LoginBase):
     pass
 
-class LoginResponse(LoginBase):
+class LoginResponse(BaseModel):
     access_token: str = Field(None, description="JWT アクセストークン")
     token_type: str = Field("bearer", description="トークンタイプ（通常は bearer）")
 
