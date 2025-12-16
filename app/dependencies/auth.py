@@ -34,7 +34,7 @@ async def get_user_by_id(user_id: int) -> Optional[User]:
         )
     return None
 
-def create_access_token(data: dict, expires_delta: Optional[int] = None) -> str:
+def create_access_token(data: dict, expires_delta: Optional[datetime] = None) -> str:
     to_encode = data.copy()
     now = datetime.now(timezone.utc)
 
