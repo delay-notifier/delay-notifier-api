@@ -1,12 +1,38 @@
 version: '3'
 services:
+  # PostgreSQLデータベース
+  db:
+    image: postgres:15
+    container_name: delay-notifier-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: delay_user
+      POSTGRES_PASSWORD: delay_password
+      POSTGRES_DB: delay_notifier
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U delay_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPIアプリケーション
   demo-app:
     build: .
     volumes:
       - /src/.venv
       - .:/src
     ports:
-      - 8000:8000  # ホストマシンのポート8000を、docker内のポート8000に接続する
+      - 8000:8000
     environment:
-      - WATCHFILES_FORCE_POLLING=true  # 環境によってホットリロードのために必要
+      - WATCHFILES_FORCE_POLLING=true
+      - DATABASE_URL=postgresql://delay_user:delay_password@db:5432/delay_notifier
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
 
