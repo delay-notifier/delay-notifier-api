@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from app.schemas.user import UserCreate, UserResponse, User
-from app.schemas.auth import LoginResponse
+from app.schemas.auth import LoginResponse, LogoutResponse
 from app.schemas.user import User
 from datetime import timedelta
+from app.dependencies.auth import get_current_user, revoke_token, oauth2_scheme
 from app.dependencies.auth import (
     get_current_user,
     get_user_by_email,
@@ -42,9 +43,10 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         token_type="bearer"
     )
 
-@router.post("/logout")
-async def logout(token: str = Depends(OAuth2PasswordRequestForm)):
-    return {"message": "Logged out (dummy)"}
+@router.post("/logout", response_model=LogoutResponse)
+async def logout(token: str = Depends(oauth2_scheme)):
+    await revoke_token(token)
+    return LogoutResponse(message="Logged out successfully")
 
 @router.get("/me", response_model=UserResponse)
 async def me(current_user: User = Depends(get_current_user)):

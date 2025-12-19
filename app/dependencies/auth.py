@@ -62,7 +62,19 @@ def decode_token(token: str) -> dict:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+def is_token_revoked(token: str) -> bool:
+    return token in denylist
+
+async def revoke_token(token: str) -> None:
+    denylist.add(token)
+
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
+    if is_token_revoked(token):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has been revoked",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     payload = decode_token(token)
     user_id = payload.get("sub")
     if user_id is None:

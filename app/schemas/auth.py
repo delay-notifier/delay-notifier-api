@@ -20,8 +20,8 @@ class TokenData(LoginBase):
     class Config:
         orm_mode = True
 
-class LogoutResponse(LoginBase):
-    message: str = Field("Logged out successfully", example="Logged out successfully")
+class LogoutResponse(BaseModel):
+    message: str = Field(None, example="Logged out successfully")
 
     class Config:
         orm_mode = True
