@@ -27,7 +27,7 @@ async def list_operators():
 @router.get("/operators/{operator_id}", response_model=lines_schema.OperatorResponse)
 async def list_lines(operator_id: int):
     return lines_schema.OperatorResponse(
-            operator_id=1,
+            operator_id=operator_id,
             operator_name="JR東日本",
             lines=[
                 lines_schema.LineResponse(
