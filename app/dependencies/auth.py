@@ -1,38 +1,20 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 from app.schemas.user import User
+from app.database import get_db
+from app.crud import user as user_crud
 from typing import Optional
 from datetime import datetime, timedelta, timezone
 import jwt
-from pydantic import EmailStr
+import os
 
-SECRET_KEY = "DUMMY_SECRET_KEY"
+SECRET_KEY = os.getenv("SECRET_KEY", "DUMMY_SECRET_KEY_FOR_DEVELOPMENT_ONLY")
 ALGORITHM = "HS256"
 
 denylist: set[str] = set()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
-
-async def get_user_by_email(email: EmailStr) -> Optional[User]:
-    if email == "test@example.com":
-        return User(
-            id=1,
-            email="test@example.com",
-            password="DUMMY_HASHED_PASSWORD"
-        )
-    return None
-
-async def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return plain_password == "password123"
-
-async def get_user_by_id(user_id: int) -> Optional[User]:
-    if user_id == 1:
-        return User(
-            id=1,
-            email="test@example.com",
-            password="DUMMY_HASHED_PASSWORD"
-        )
-    return None
 
 def create_access_token(data: dict, expires_delta: Optional[datetime] = None) -> str:
     to_encode = data.copy()
@@ -68,7 +50,10 @@ def is_token_revoked(token: str) -> bool:
 async def revoke_token(token: str) -> None:
     denylist.add(token)
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> User:
     if is_token_revoked(token):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -83,7 +68,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
             detail="Invalid token payload",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user = await get_user_by_id(int(user_id))
+    user = user_crud.get_user(db, user_id=int(user_id))
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
