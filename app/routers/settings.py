@@ -20,7 +20,6 @@ async def set_delaynotifier(
         day_of_the_week=request.day_of_the_week,
         start_time=request.start_time,
         end_time=request.end_time,
-        is_enabled=True,
         message="通知設定が完了しました"
     )
 
