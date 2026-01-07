@@ -24,7 +24,7 @@ async def list_operators():
     )
 
 #ある鉄道会社の路線一覧を取得する
-@router.get("/operators/{operator_id}", response_model=lines_schema.OperatorResponse)
+@router.get("/operator/{operator_id}", response_model=lines_schema.OperatorResponse)
 async def list_lines(operator_id: int):
     return lines_schema.OperatorResponse(
             operator_id=operator_id,
@@ -42,6 +42,9 @@ async def list_lines(operator_id: int):
         )
 
 #特定の路線の情報を取得する
-@router.get("/{line_id}")
-async def get_lines(line_id: int):
-    pass
+@router.get("/line/{line_id}")
+async def get_line(line_id: int):
+    return lines_schema.LineResponse(
+            line_id=line_id,
+            line_name="中央線"
+        )
