@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 import app.schemas.lines as lines_schema
+from app.dependencies.lines import get_line
 
 router = APIRouter()
 
@@ -42,9 +43,6 @@ async def list_lines(operator_id: int):
         )
 
 #特定の路線の情報を取得する
-@router.get("/line/{line_id}")
-async def get_line(line_id: int):
-    return lines_schema.LineResponse(
-            line_id=line_id,
-            line_name="中央線"
-        )
+@router.get("/operator/line/{line_id}")
+async def get_line_info(line_id: int):
+    return await get_line(line_id)
